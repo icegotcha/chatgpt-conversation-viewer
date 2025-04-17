@@ -2,8 +2,36 @@
 
 import { useState } from 'react';
 
+interface MessageContent {
+  content_type: string;
+  parts: string[];
+}
+
+interface MessageAuthor {
+  role: "user" | "assistant" | "system";
+}
+
+interface Message {
+  author: MessageAuthor;
+  content: MessageContent;
+  create_time: number;
+}
+
+interface MessageNode {
+  id: string;
+  message: Message;
+  parent: string | null;
+  children: string[];
+}
+
+interface ChatData {
+  title: string;
+  mapping: { [key: string]: MessageNode };
+  create_time: number;
+}
+
 interface FileBrowserProps {
-  onFileSelect: (chats: any[]) => void;
+  onFileSelect: (chats: ChatData[]) => void;
   onError: (error: string) => void;
 }
 
@@ -26,10 +54,16 @@ export default function FileBrowser({ onFileSelect, onError }: FileBrowserProps)
           throw new Error('Invalid file format: Expected an array of chats');
         }
 
-        const validChats = parsedChats.map((chat: any) => ({
-          title: chat.title || 'Untitled Chat',
-          messages: chat.messages || []
-        }));
+        // Validate each chat has required fields
+        const validChats = parsedChats.map((chat: any) => {
+          if (!chat.mapping || typeof chat.mapping !== 'object') {
+            throw new Error('Invalid chat format: Missing or invalid mapping object');
+          }
+          if (!chat.title) {
+            chat.title = 'Untitled Chat';
+          }
+          return chat;
+        });
 
         onFileSelect(validChats);
       } catch (err) {
