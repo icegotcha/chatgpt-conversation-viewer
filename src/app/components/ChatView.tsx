@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 import ChevronLeft from './icons/ChevronLeft';
+import ReactMarkdown from 'react-markdown';
 
 interface MessageContent {
   content_type: string;
@@ -98,9 +99,17 @@ export default function ChatView({ chat, onBack }: ChatViewProps) {
                 : 'bg-[#FF7BBF]/10 text-white'
                 }`}
             >
-              <p className="whitespace-pre-wrap text-sm">
-                {node.message.content.parts?.join('') || ''}
-              </p>
+              {node.message.author.role === 'assistant' ? (
+                <div className="prose prose-invert max-w-none">
+                  <ReactMarkdown>
+                    {node.message.content.parts?.join('') || ''}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <p className="whitespace-pre-wrap text-sm">
+                  {node.message.content.parts?.join('') || ''}
+                </p>
+              )}
             </div>
           </div>
         ))}
