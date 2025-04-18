@@ -17,7 +17,7 @@ export default function ChatBrowser() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChat, setSelectedChat] = useState<ChatData | null>(null);
-
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
   const filteredChats = chats.filter(chat =>
     chat.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -39,6 +39,8 @@ export default function ChatBrowser() {
       <FileBrowser
         onFileSelect={setChats}
         onError={(message) => setError(message)}
+        selectedFile={selectedFile}
+        setSelectedFile={setSelectedFile}
       />
 
       {error && (

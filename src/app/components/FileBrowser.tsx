@@ -1,16 +1,15 @@
 'use client';
 
-import { useState } from 'react';
 import { ChatData } from './ChatView';
 
 interface FileBrowserProps {
   onFileSelect: (chats: ChatData[]) => void;
   onError: (error: string) => void;
+  selectedFile: string | null;
+  setSelectedFile: (file: string | null) => void;
 }
 
-export default function FileBrowser({ onFileSelect, onError }: FileBrowserProps) {
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
-
+export default function FileBrowser({ onFileSelect, onError, selectedFile, setSelectedFile }: FileBrowserProps) {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
