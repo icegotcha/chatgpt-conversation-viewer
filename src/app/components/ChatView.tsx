@@ -12,10 +12,16 @@ interface MessageAuthor {
   role: "user" | "assistant" | "system";
 }
 
+interface MessageMetadata {
+  is_visually_hidden_from_conversation?: boolean;
+  [key: string]: any;
+}
+
 interface Message {
   author: MessageAuthor;
   content: MessageContent;
   create_time: number;
+  metadata?: MessageMetadata;
 }
 
 interface MessageNode {
@@ -42,18 +48,28 @@ export default function ChatView({ chat, onBack }: ChatViewProps) {
     const messages: MessageNode[] = [];
     const mapping = chat.mapping;
     
-    // Find the last message (one without a children)
-    let currentId = Object.values(mapping).find(node => node.children.length === 0)?.id;
+    // Find the last message (one without children)
+    let currentId = Object.values(mapping).findLast(node => node.children.length === 0)?.id;
     
     // Follow the chain of messages
     while (currentId && mapping[currentId] && mapping[currentId].parent !== 'client-created-root') {
-      messages.push(mapping[currentId]);
-      // Get the first child as the next message
-      currentId = mapping[currentId].parent;
+      const currentNode = mapping[currentId];
+      
+      // Only add messages that are not hidden
+      if (!currentNode.message.metadata?.is_visually_hidden_from_conversation) {
+        messages.push(currentNode);
+      }
+      
+      // Get the parent as the next message
+      currentId = currentNode.parent;
     }
 
-    // Add the root message
-    messages.push(mapping[mapping['client-created-root'].children[0]]);
+    // Add the root message if it's not hidden
+    const rootMessageId = mapping['client-created-root'].children[0];
+    const rootMessage = mapping[rootMessageId];
+    if (rootMessage && !rootMessage.message.metadata?.is_visually_hidden_from_conversation) {
+      messages.push(rootMessage);
+    }
     
     return messages.reverse();
   }, [chat.mapping]);

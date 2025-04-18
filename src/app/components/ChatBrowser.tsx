@@ -15,10 +15,16 @@ interface MessageAuthor {
   role: "user" | "assistant" | "system";
 }
 
+interface MessageMetadata {
+  is_visually_hidden_from_conversation?: boolean;
+  [key: string]: any;
+}
+
 interface Message {
   author: MessageAuthor;
   content: MessageContent;
   create_time: number;
+  metadata?: MessageMetadata;
 }
 
 interface MessageNode {
