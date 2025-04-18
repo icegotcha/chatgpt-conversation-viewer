@@ -14,7 +14,6 @@ interface MessageAuthor {
 
 interface MessageMetadata {
   is_visually_hidden_from_conversation?: boolean;
-  [key: string]: any;
 }
 
 interface Message {
@@ -22,17 +21,17 @@ interface Message {
   content: MessageContent;
   metadata?: MessageMetadata;
   create_time: number;
-  status: string;
+
 }
 
-interface MessageNode {
+export interface MessageNode {
   id: string;
   message: Message;
   parent: string;
   children: string[];
 }
 
-interface ChatData {
+export interface ChatData {
   title: string;
   mapping: { [key: string]: MessageNode };
   create_time: number;

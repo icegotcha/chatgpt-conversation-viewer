@@ -1,40 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-interface MessageContent {
-  content_type: string;
-  parts: string[];
-}
-
-interface MessageAuthor {
-  role: "user" | "assistant" | "system";
-}
-
-interface MessageMetadata {
-  is_visually_hidden_from_conversation?: boolean;
-  [key: string]: any;
-}
-
-interface Message {
-  author: MessageAuthor;
-  content: MessageContent;
-  create_time: number;
-  metadata?: MessageMetadata;
-}
-
-interface MessageNode {
-  id: string;
-  message: Message;
-  parent: string | null;
-  children: string[];
-}
-
-interface ChatData {
-  title: string;
-  mapping: { [key: string]: MessageNode };
-  create_time: number;
-}
+import { ChatData } from './ChatView';
 
 interface FileBrowserProps {
   onFileSelect: (chats: ChatData[]) => void;
@@ -54,7 +21,7 @@ export default function FileBrowser({ onFileSelect, onError }: FileBrowserProps)
       try {
         const content = e.target?.result as string;
         const parsedChats = JSON.parse(content);
-        
+
         // Validate the structure
         if (!Array.isArray(parsedChats)) {
           throw new Error('Invalid file format: Expected an array of chats');
@@ -105,4 +72,4 @@ export default function FileBrowser({ onFileSelect, onError }: FileBrowserProps)
       </div>
     </div>
   );
-} 
+}
