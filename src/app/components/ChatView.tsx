@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import ChevronLeft from './icons/ChevronLeft';
 import ReactMarkdown from 'react-markdown';
+import { getMessageUpdateDate, getChatUpdateDate } from '../../utils/date';
 
 interface MessageContent {
   content_type: string;
@@ -43,11 +44,6 @@ interface ChatViewProps {
   onBack: () => void;
 }
 
-function getMessageUpdateDate(msg: Message): string {
-  const update = msg.update_time ?? msg.create_time;
-  return update ? new Date(update * 1000).toLocaleString() : '';
-}
-
 export default function ChatView({ chat, onBack }: ChatViewProps) {
 
   const isVisibleMessage = useCallback((node: MessageNode) => {
@@ -80,16 +76,7 @@ export default function ChatView({ chat, onBack }: ChatViewProps) {
   }, [chat.mapping]);
 
   // Get latest update date for the chat
-  const chatUpdateDate = useMemo(() => {
-    let latest = 0;
-    for (const node of Object.values(chat.mapping)) {
-      const msg = node.message;
-      if (!msg) continue;
-      const update = (msg as any).update_time ?? msg.create_time;
-      if (update && update > latest) latest = update;
-    }
-    return latest ? new Date(latest * 1000).toLocaleString() : '';
-  }, [chat.mapping]);
+  const chatUpdateDate = getChatUpdateDate(chat);
 
   return (
     <div className="space-y-4">

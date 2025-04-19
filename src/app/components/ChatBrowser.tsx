@@ -5,23 +5,12 @@ import ChevronRight from './icons/ChevronRight';
 import FileBrowser from './FileBrowser';
 import SearchBar from './SearchBar';
 import ChatView, { MessageNode } from './ChatView';
+import { getChatUpdateDate } from '../../utils/date';
 
 interface ChatData {
   title: string;
   mapping: { [key: string]: MessageNode };
   create_time: number;
-}
-
-function getChatUpdateDate(chat: ChatData): string {
-  const messages = Object.values(chat.mapping);
-  let latest = 0;
-  for (const node of messages) {
-    const msg = node.message;
-    if (!msg) continue;
-    const update = msg.update_time ?? msg.create_time;
-    if (update && update > latest) latest = update;
-  }
-  return latest ? new Date(latest * 1000).toLocaleString() : '';
 }
 
 export default function ChatBrowser() {
