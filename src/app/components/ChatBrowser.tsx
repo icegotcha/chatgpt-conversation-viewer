@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import ChevronRight from './icons/ChevronRight';
 import FileBrowser from './FileBrowser';
 import SearchBar from './SearchBar';
@@ -10,6 +10,18 @@ interface ChatData {
   title: string;
   mapping: { [key: string]: MessageNode };
   create_time: number;
+}
+
+function getChatUpdateDate(chat: ChatData): string {
+  const messages = Object.values(chat.mapping);
+  let latest = 0;
+  for (const node of messages) {
+    const msg = node.message;
+    if (!msg) continue;
+    const update = msg.update_time ?? msg.create_time;
+    if (update && update > latest) latest = update;
+  }
+  return latest ? new Date(latest * 1000).toLocaleString() : '';
 }
 
 export default function ChatBrowser() {
@@ -69,6 +81,9 @@ export default function ChatBrowser() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">
                       {chat.title}
+                    </p>
+                    <p className="text-xs text-[#FF7BBF] mt-1">
+                      {getChatUpdateDate(chat)}
                     </p>
                   </div>
                   <div className="text-white hover:text-[#50409A]">

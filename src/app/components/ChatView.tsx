@@ -22,7 +22,7 @@ interface Message {
   content: MessageContent;
   metadata?: MessageMetadata;
   create_time: number;
-
+  update_time?: number;
 }
 
 export interface MessageNode {
@@ -41,6 +41,11 @@ export interface ChatData {
 interface ChatViewProps {
   chat: ChatData;
   onBack: () => void;
+}
+
+function getMessageUpdateDate(msg: Message): string {
+  const update = msg.update_time ?? msg.create_time;
+  return update ? new Date(update * 1000).toLocaleString() : '';
 }
 
 export default function ChatView({ chat, onBack }: ChatViewProps) {
@@ -74,6 +79,18 @@ export default function ChatView({ chat, onBack }: ChatViewProps) {
     return messages.reverse();
   }, [chat.mapping]);
 
+  // Get latest update date for the chat
+  const chatUpdateDate = useMemo(() => {
+    let latest = 0;
+    for (const node of Object.values(chat.mapping)) {
+      const msg = node.message;
+      if (!msg) continue;
+      const update = (msg as any).update_time ?? msg.create_time;
+      if (update && update > latest) latest = update;
+    }
+    return latest ? new Date(latest * 1000).toLocaleString() : '';
+  }, [chat.mapping]);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -83,7 +100,10 @@ export default function ChatView({ chat, onBack }: ChatViewProps) {
         >
           <ChevronLeft />
         </button>
-        <h2 className="text-xl font-semibold text-[#964EC2]">{chat.title}</h2>
+        <div>
+          <h2 className="text-xl font-semibold text-[#964EC2]">{chat.title}</h2>
+          <p className="text-xs text-[#FF7BBF] mt-1">{chatUpdateDate}</p>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -110,6 +130,9 @@ export default function ChatView({ chat, onBack }: ChatViewProps) {
                   {node.message.content.parts?.join('') || ''}
                 </p>
               )}
+              <p className="text-xs text-[#FF7BBF] mt-2 text-right">
+                {getMessageUpdateDate(node.message)}
+              </p>
             </div>
           </div>
         ))}
