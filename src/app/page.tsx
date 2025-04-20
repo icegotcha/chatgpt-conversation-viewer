@@ -1,4 +1,4 @@
-import ChatBrowser from './components/ChatBrowser';
+import ChatBrowser from '../components/ChatBrowser';
 
 export default function Home() {
   return (

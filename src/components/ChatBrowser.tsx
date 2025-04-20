@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import ChevronRight from './icons/ChevronRight';
 import FileBrowser from './FileBrowser';
 import SearchBar from './SearchBar';
-import ChatView, { MessageNode } from './ChatView';
-import { getChatUpdateDate } from '../../utils/date';
+import ChatView from './ChatView';
+import { getMessageUpdateDate } from '../utils/date';
+import { MessageNode } from '@/types/chat';
 
 interface ChatData {
   title: string;
@@ -30,6 +31,7 @@ export default function ChatBrowser() {
         <ChatView
           chat={selectedChat}
           onBack={() => setSelectedChat(null)}
+          chatUpdateDate={getMessageUpdateDate(selectedChat)}
         />
       </div>
     );
@@ -68,12 +70,14 @@ export default function ChatBrowser() {
               >
                 <div className="flex items-center justify-between px-3">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">
-                      {chat.title}
-                    </p>
-                    <p className="text-xs text-[#FF7BBF] mt-1">
-                      {getChatUpdateDate(chat)}
-                    </p>
+                    <div>
+                      <h2 className="text-sm font-medium text-white truncate">
+                        {chat.title}
+                      </h2>
+                      <p className="text-xs text-[#FF7BBF] mt-1">
+                        Last Updated: {getMessageUpdateDate(chat)}
+                      </p>
+                    </div>
                   </div>
                   <div className="text-white hover:text-[#50409A]">
                     <ChevronRight />

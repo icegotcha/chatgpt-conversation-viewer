@@ -1,6 +1,6 @@
 'use client';
 
-import { ChatData } from './ChatView';
+import { ChatData } from "@/types/chat";
 
 interface FileBrowserProps {
   onFileSelect: (chats: ChatData[]) => void;
@@ -27,7 +27,7 @@ export default function FileBrowser({ onFileSelect, onError, selectedFile, setSe
         }
 
         // Validate each chat has required fields
-        const validChats = parsedChats.map((chat: any) => {
+        const validChats = parsedChats.map((chat: ChatData) => {
           if (!chat.mapping || typeof chat.mapping !== 'object') {
             throw new Error('Invalid chat format: Missing or invalid mapping object');
           }

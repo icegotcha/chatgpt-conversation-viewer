@@ -1,63 +1,24 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import ChevronLeft from './icons/ChevronLeft';
 import ReactMarkdown from 'react-markdown';
-import { getMessageUpdateDate, getChatUpdateDate } from '../../utils/date';
-
-interface MessageContent {
-  content_type: string;
-  parts: string[];
-}
-
-interface MessageAuthor {
-  role: "user" | "assistant" | "system";
-}
-
-interface MessageMetadata {
-  is_visually_hidden_from_conversation?: boolean;
-}
-
-interface Message {
-  author: MessageAuthor;
-  content: MessageContent;
-  metadata?: MessageMetadata;
-  create_time: number;
-  update_time?: number;
-}
-
-export interface MessageNode {
-  id: string;
-  message: Message;
-  parent: string;
-  children: string[];
-}
-
-export interface ChatData {
-  title: string;
-  mapping: { [key: string]: MessageNode };
-  create_time: number;
-}
+import { getMessageUpdateDate } from '../utils/date';
+import { isVisibleMessage } from '@/utils/chat';
+import { ChatData, MessageNode } from '@/types/chat';
 
 interface ChatViewProps {
   chat: ChatData;
   onBack: () => void;
+  chatUpdateDate: string;
 }
 
-export default function ChatView({ chat, onBack }: ChatViewProps) {
-
-  const isVisibleMessage = useCallback((node: MessageNode) => {
-    return node.message &&
-      !node.message?.metadata?.is_visually_hidden_from_conversation &&
-      node.message?.author?.role !== 'system' &&
-      node.message?.content.content_type === 'text' &&
-      node.message?.content?.parts[0] !== '';
-  }, []);
+export default function ChatView({ chat, onBack, chatUpdateDate }: ChatViewProps) {
 
   const orderedMessages = useMemo(() => {
     const messages: MessageNode[] = [];
     const mapping = chat.mapping;
-    let leafNodes = Object.values(mapping).filter(node => node.children.length === 0);
+    const leafNodes = Object.values(mapping).filter(node => node.children.length === 0);
 
     const activeChat = leafNodes.sort((a, b) => b.message.create_time - a.message.create_time)[0];
     let currentId = activeChat.id;
@@ -75,9 +36,6 @@ export default function ChatView({ chat, onBack }: ChatViewProps) {
     return messages.reverse();
   }, [chat.mapping]);
 
-  // Get latest update date for the chat
-  const chatUpdateDate = getChatUpdateDate(chat);
-
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -89,7 +47,7 @@ export default function ChatView({ chat, onBack }: ChatViewProps) {
         </button>
         <div>
           <h2 className="text-xl font-semibold text-[#964EC2]">{chat.title}</h2>
-          <p className="text-xs text-[#FF7BBF] mt-1">{chatUpdateDate}</p>
+          <p className="text-xs text-[#FF7BBF] mt-1">Last Updated: {chatUpdateDate}</p>
         </div>
       </div>
 
